@@ -103,6 +103,21 @@ class NoteStore:
             self.state = state
             return dict(done)
 
+    def delete(self, note_id):
+        """Remove the note with note_id; return False when there is no such note.
+
+        The note is gone from the file before this returns; next_id is kept, so the id is never
+        issued again, and the other notes keep their order. Nothing is written for an unknown id.
+        """
+        with self.lock:
+            notes = [note for note in self.state["notes"] if note["id"] != note_id]
+            if len(notes) == len(self.state["notes"]):
+                return False
+            state = {"next_id": self.state["next_id"], "notes": notes}
+            self.write(state)
+            self.state = state
+            return True
+
     def write(self, state):
         tmp_path = f"{self.path}.tmp"
         with open(tmp_path, "w", encoding="utf-8") as f:
