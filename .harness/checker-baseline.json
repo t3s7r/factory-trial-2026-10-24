@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-24T01:15:41.301Z",
+  "files": [],
+  "dirs": {
+    "docs/research": "2026-10-24T01:15:41.301Z",
+    "docs/plans": "2026-10-24T01:15:41.301Z",
+    "docs/verify": "2026-10-24T01:15:41.301Z",
+    "docs/evidence": "2026-10-24T01:15:41.301Z",
+    "docs/handoffs": "2026-10-24T01:15:41.301Z"
+  },
+  "rules": {
+    "surfaceReceiptsSince": "2026-10-24T01:15:41.302Z",
+    "processReceiptsSince": "2026-10-24T01:15:41.302Z"
+  }
+}

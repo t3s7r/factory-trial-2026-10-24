@@ -1,0 +1,186 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part router"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part handoff"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions --slice 2"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions --slice 3"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions --slice 4"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions --slice 5"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part decisions --slice 6"
+          },
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SessionStart \"/home/marek/dev/harnesA4/harness/hooks/session-start.mjs\" --part facts"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Task|Agent|Workflow",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PreToolUse \"/home/marek/dev/harnesA4/harness/hooks/pretooluse-task-gate.mjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PreToolUse \"/home/marek/dev/harnesA4/harness/hooks/pretooluse-remote-gate.mjs\" --fail-open"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit|Bash|AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PreToolUse \"/home/marek/dev/harnesA4/harness/hooks/pretooluse-taskfile-gate.mjs\" --fail-open"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Task|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PostToolUse \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-task-ledger.mjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch|mcp__fetch__fetch|mcp__firecrawl__.*|mcp__exa__.*|mcp__brave-search__brave_web_search|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PostToolUse \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-fetch-ledger.mjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" PostToolUse \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-source-ledger.mjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "^(Read|Bash|Grep)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-read-ledger.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "^(Bash|Read|Grep)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-source-gate.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-grep-notice.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/posttooluse-read-ledger.sh\""
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SubagentStart \"/home/marek/dev/harnesA4/harness/hooks/subagent-start-brief.mjs\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" UserPromptSubmit \"/home/marek/dev/harnesA4/harness/hooks/userpromptsubmit-prompt.mjs\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" Stop \"/home/marek/dev/harnesA4/harness/hooks/stop-answer-gate.mjs\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/marek/dev/harnesA4/harness/hooks/run-hook.sh\" SubagentStop \"/home/marek/dev/harnesA4/harness/hooks/stop-answer-gate.mjs\""
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5"
+  }
+}
