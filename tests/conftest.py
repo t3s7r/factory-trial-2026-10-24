@@ -19,6 +19,10 @@ def free_port():
         return s.getsockname()[1]
 
 
+def service_command(port, data_path):
+    return [sys.executable, "-m", "notes", "--port", str(port), "--data", str(data_path)]
+
+
 class Service:
     def __init__(self, port, data_path, process):
         self.port = port
@@ -31,9 +35,11 @@ class Service:
         with urllib.request.urlopen(req, timeout=5) as resp:
             return resp.status, resp.headers["Content-Type"], resp.read()
 
-    def request(self, method, path):
-        """Return (status, content type, parsed JSON body)."""
-        req = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", method=method)
+    def request(self, method, path, body=None):
+        """Return (status, content type, parsed JSON body); body is sent as raw bytes."""
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}{path}", data=body, method=method
+        )
         try:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 return resp.status, resp.headers["Content-Type"], json.loads(resp.read())
@@ -54,7 +60,7 @@ def start_service(tmp_path):
         port = free_port()
         data_path = tmp_path / "notes.json"
         process = subprocess.Popen(
-            [sys.executable, "-m", "notes", "--port", str(port), "--data", str(data_path)],
+            service_command(port, data_path),
             cwd=REPO,
             env=env,
         )
