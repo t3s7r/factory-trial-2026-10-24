@@ -44,6 +44,22 @@ def test_empty_candidate_falls_back_to_the_git_commit(start_service):
     assert body == {"build_id": git_head_or_dev()}
 
 
+def test_build_id_txt_is_the_bare_candidate(start_service):
+    service = start_service({"FACTORY_RUNTIME_CANDIDATE": "cand-123"})
+    status, content_type, body = service.request_raw("GET", "/build-id.txt")
+    assert status == 200
+    assert content_type == "text/plain"
+    assert body == b"cand-123"
+
+
+def test_build_id_txt_matches_build_id_without_a_candidate(start_service):
+    service = start_service(drop_env=["FACTORY_RUNTIME_CANDIDATE"])
+    _, _, json_body = service.request("GET", "/build-id")
+    status, _, body = service.request_raw("GET", "/build-id.txt")
+    assert status == 200
+    assert body.decode("utf-8") == json_body["build_id"] == git_head_or_dev()
+
+
 def test_unknown_path_is_a_json_404(start_service):
     service = start_service()
     status, content_type, body = service.request("GET", "/nope")
@@ -65,4 +81,5 @@ def test_data_file_is_never_created(start_service):
     service = start_service()
     assert service.request("GET", "/health")[0] == 200
     assert service.request("GET", "/build-id")[0] == 200
+    assert service.request_raw("GET", "/build-id.txt")[0] == 200
     assert not service.data_path.exists()

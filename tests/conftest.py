@@ -25,6 +25,12 @@ class Service:
         self.data_path = data_path
         self.process = process
 
+    def request_raw(self, method, path):
+        """Return (status, content type, body bytes)."""
+        req = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", method=method)
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return resp.status, resp.headers["Content-Type"], resp.read()
+
     def request(self, method, path):
         """Return (status, content type, parsed JSON body)."""
         req = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", method=method)
