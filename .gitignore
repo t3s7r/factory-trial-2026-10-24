@@ -34,3 +34,14 @@ credentials.json
 .harness/proof.json
 .harness/proof/
 .harness/source-index/
+
+# harnesA4 hooks write working state under .harness/ at every session start and tool call; a factory node that
+# declares mutates_checkout: false fails if the tree changes under it (seen live 2026-10-24, run 991f5a75), so
+# everything under .harness/ is ignored except the files the repo tracks on purpose.
+.harness/*
+!.harness/tasks.md
+!.harness/registry.json
+!.harness/entries.json
+!.harness/checker-baseline.json
+!.harness/harness-manifest.json
+!.harness/decisions.json
