@@ -8,7 +8,8 @@
     "health_path": "/health",
     "health_contains": "ok",
     "boot_timeout_s": 45,
-    "env": {}
+    "env": {},
+    "identity_path": "/build-id.txt"
   },
   "cli": {
     "invoke": "",
