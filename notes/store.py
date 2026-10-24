@@ -68,6 +68,11 @@ class NoteStore:
             raise DataFileError(f"{path} is not a notes file: {err}") from err
         return cls(path, state)
 
+    def list(self):
+        """Every note in creation order, read from memory; never touches the file."""
+        with self.lock:
+            return [dict(note) for note in self.state["notes"]]
+
     def create(self, text):
         """Write a new note to the file and return it; the note exists only once it is on disk."""
         with self.lock:

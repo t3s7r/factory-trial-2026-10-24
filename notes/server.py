@@ -62,6 +62,8 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/build-id.txt":
             # The runtime host compares this body to its candidate as plain text.
             self.send_text(200, self.server.build_id)
+        elif path == "/notes":
+            self.list_notes()
         else:
             self.not_found()
 
@@ -71,6 +73,11 @@ class Handler(BaseHTTPRequestHandler):
             self.create_note()
         else:
             self.not_found()
+
+    def list_notes(self):
+        notes = self.server.store.list()
+        # open is counted from the notes being returned, never stored.
+        self.send_json(200, {"notes": notes, "open": sum(1 for note in notes if not note["done"])})
 
     def read_json_object(self):
         """The request body as a dict, or None when it is not a JSON object."""
