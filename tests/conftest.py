@@ -31,9 +31,11 @@ class Service:
         with urllib.request.urlopen(req, timeout=5) as resp:
             return resp.status, resp.headers["Content-Type"], resp.read()
 
-    def request(self, method, path):
-        """Return (status, content type, parsed JSON body)."""
-        req = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", method=method)
+    def request(self, method, path, body=None):
+        """Return (status, content type, parsed JSON body); body is sent as raw bytes."""
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}{path}", data=body, method=method
+        )
         try:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 return resp.status, resp.headers["Content-Type"], json.loads(resp.read())

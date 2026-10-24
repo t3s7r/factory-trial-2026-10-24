@@ -65,7 +65,38 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self.not_found()
 
-    do_POST = not_found
+    def do_POST(self):
+        path = self.path.split("?", 1)[0]
+        if path == "/notes":
+            self.create_note()
+        else:
+            self.not_found()
+
+    def read_json_object(self):
+        """The request body as a dict, or None when it is not a JSON object."""
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+            body = json.loads(self.rfile.read(max(length, 0)))
+        except ValueError:
+            return None
+        return body if isinstance(body, dict) else None
+
+    def create_note(self):
+        body = self.read_json_object()
+        if body is None:
+            self.send_json(400, {"error": "the body must be a JSON object"})
+            return
+        text = body.get("text")
+        if not isinstance(text, str) or not text:
+            self.send_json(400, {"error": "text must be a non-empty string"})
+            return
+        try:
+            note = self.server.store.create(text)
+        except OSError as err:
+            self.send_json(500, {"error": f"could not save the note: {err.strerror}"})
+            return
+        self.send_json(201, note)
+
     do_PUT = not_found
     do_PATCH = not_found
     do_DELETE = not_found
@@ -87,10 +118,9 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-def serve(port, data_path):
+def serve(port, store):
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    # --data is kept for the note store; nothing here touches the file yet.
-    server.data_path = data_path
+    server.store = store
     server.build_id = build_id()
     try:
         server.serve_forever()
