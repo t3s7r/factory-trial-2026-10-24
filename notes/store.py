@@ -82,6 +82,27 @@ class NoteStore:
             self.state = state
             return note
 
+    def mark_done(self, note_id):
+        """Set done on the note with note_id and return it, or None when there is no such note.
+
+        The change is on disk before it is returned; a note already done is returned unchanged
+        without writing, and only the named note changes.
+        """
+        with self.lock:
+            for index, note in enumerate(self.state["notes"]):
+                if note["id"] == note_id:
+                    break
+            else:
+                return None
+            if note["done"]:
+                return dict(note)
+            done = dict(note, done=True)
+            notes = self.state["notes"][:index] + [done] + self.state["notes"][index + 1 :]
+            state = {"next_id": self.state["next_id"], "notes": notes}
+            self.write(state)
+            self.state = state
+            return dict(done)
+
     def write(self, state):
         tmp_path = f"{self.path}.tmp"
         with open(tmp_path, "w", encoding="utf-8") as f:
