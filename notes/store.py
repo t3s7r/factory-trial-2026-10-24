@@ -30,10 +30,16 @@ def check_state(state):
         raise DataFileError("the top level must be an object with exactly next_id and notes")
     if not is_int(state["next_id"]) or not isinstance(state["notes"], list):
         raise DataFileError("next_id must be an integer and notes a list")
+    if state["next_id"] < 1:
+        raise DataFileError(f"next_id {state['next_id']} is below 1")
+    previous_id = 0
     for note in state["notes"]:
         check_note(note)
-        if note["id"] >= state["next_id"]:
-            raise DataFileError(f"note id {note['id']} is not below next_id {state['next_id']}")
+        if not previous_id < note["id"] < state["next_id"]:
+            raise DataFileError(
+                f"note id {note['id']} is not above {previous_id} and below next_id {state['next_id']}"
+            )
+        previous_id = note["id"]
 
 
 class NoteStore:
@@ -54,7 +60,7 @@ class NoteStore:
             raise DataFileError(f"cannot read {path}: {err.strerror}") from err
         try:
             state = json.loads(raw)
-        except ValueError as err:
+        except (ValueError, RecursionError) as err:
             raise DataFileError(f"{path} is not valid JSON: {err}") from err
         try:
             check_state(state)

@@ -77,7 +77,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("Content-Length") or 0)
             body = json.loads(self.rfile.read(max(length, 0)))
-        except ValueError:
+        except (ValueError, RecursionError):
             return None
         return body if isinstance(body, dict) else None
 

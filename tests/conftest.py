@@ -19,6 +19,10 @@ def free_port():
         return s.getsockname()[1]
 
 
+def service_command(port, data_path):
+    return [sys.executable, "-m", "notes", "--port", str(port), "--data", str(data_path)]
+
+
 class Service:
     def __init__(self, port, data_path, process):
         self.port = port
@@ -56,7 +60,7 @@ def start_service(tmp_path):
         port = free_port()
         data_path = tmp_path / "notes.json"
         process = subprocess.Popen(
-            [sys.executable, "-m", "notes", "--port", str(port), "--data", str(data_path)],
+            service_command(port, data_path),
             cwd=REPO,
             env=env,
         )
