@@ -12,13 +12,14 @@ One person on one machine, using the service from a script or a browser. There a
 - Tests with `pytest` (the only development dependency), run with `python3 -m pytest -q`.
 - Continuous integration: one GitHub Actions workflow named `tests` that runs the test suite on every push and pull request.
 - The service starts with `python3 -m notes --port <port> --data <path>` and stores every note in the JSON file at `--data`.
-- Every response is JSON. Errors return `{"error": "<message>"}` with the right HTTP status.
+- Every response is JSON, except `GET /build-id.txt` (Story 1.4). Errors return `{"error": "<message>"}` with the right HTTP status.
 
 ## Phase 1: the skeleton
 
 - Story 1.1: as the operator I start the service and ask `GET /health`; it answers `200 {"status": "ok"}`.
 - Story 1.2: as the operator I ask `GET /build-id`; it answers `200 {"build_id": "<the git commit the service was built from, or 'dev'>"}`.
 - Story 1.3: the test suite starts the service on a free port, calls both endpoints, and passes; CI runs it green on `main`.
+- Story 1.4: as the runtime host I ask `GET /build-id.txt`; it answers `200` with `Content-Type: text/plain` and the bare build id (the same value as `/build-id`'s `build_id`) and nothing else. This is the one endpoint that is not JSON, because the factory's runtime host compares the body to the candidate as plain text (owner decision 2026-10-24, option c of the loop's first report).
 
 ## Phase 2: notes
 
