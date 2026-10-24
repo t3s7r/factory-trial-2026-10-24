@@ -2,11 +2,15 @@
 
 import json
 import os
+import re
 import subprocess
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 SOURCE_DIR = Path(__file__).resolve().parent
+# An id in a path is a decimal integer written without leading zeros; anything else names no note.
+DONE_PATH = re.compile(r"/notes/([^/]*)/done")
+NOTE_ID = re.compile(r"0|[1-9][0-9]*")
 
 
 def build_id():
@@ -69,8 +73,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split("?", 1)[0]
+        done_match = DONE_PATH.fullmatch(path)
         if path == "/notes":
             self.create_note()
+        elif done_match:
+            self.mark_done(done_match.group(1))
         else:
             self.not_found()
 
@@ -103,6 +110,19 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(500, {"error": f"could not save the note: {err.strerror}"})
             return
         self.send_json(201, note)
+
+    def mark_done(self, raw_id):
+        note = None
+        if NOTE_ID.fullmatch(raw_id):
+            try:
+                note = self.server.store.mark_done(int(raw_id))
+            except OSError as err:
+                self.send_json(500, {"error": f"could not save the note: {err.strerror}"})
+                return
+        if note is None:
+            self.send_json(404, {"error": f"no note with id {raw_id}"})
+            return
+        self.send_json(200, note)
 
     do_PUT = not_found
     do_PATCH = not_found
