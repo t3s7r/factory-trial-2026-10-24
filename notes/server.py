@@ -1,4 +1,5 @@
-"""The HTTP service. Every response, errors included, is a JSON body, except /build-id.txt."""
+"""The HTTP service. Every response, errors included, is a JSON body, except /build-id.txt
+and the empty body of a 204."""
 
 import json
 import os
@@ -10,6 +11,7 @@ from pathlib import Path
 SOURCE_DIR = Path(__file__).resolve().parent
 # An id in a path is a decimal integer written without leading zeros; anything else names no note.
 DONE_PATH = re.compile(r"/notes/([^/]*)/done")
+NOTE_PATH = re.compile(r"/notes/([^/]*)")
 NOTE_ID = re.compile(r"0|[1-9][0-9]*")
 
 
@@ -53,6 +55,11 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
+
+    def send_empty(self, status):
+        # A 204 carries no body and, per RFC 9110, no Content-Length.
+        self.send_response(status)
+        self.end_headers()
 
     def not_found(self):
         self.send_json(404, {"error": f"no route for {self.command} {self.path}"})
@@ -124,9 +131,29 @@ class Handler(BaseHTTPRequestHandler):
             return
         self.send_json(200, note)
 
+    def do_DELETE(self):
+        path = self.path.split("?", 1)[0]
+        note_match = NOTE_PATH.fullmatch(path)
+        if note_match:
+            self.delete_note(note_match.group(1))
+        else:
+            self.not_found()
+
+    def delete_note(self, raw_id):
+        deleted = False
+        if NOTE_ID.fullmatch(raw_id):
+            try:
+                deleted = self.server.store.delete(int(raw_id))
+            except OSError as err:
+                self.send_json(500, {"error": f"could not save the change: {err.strerror}"})
+                return
+        if not deleted:
+            self.send_json(404, {"error": f"no note with id {raw_id}"})
+            return
+        self.send_empty(204)
+
     do_PUT = not_found
     do_PATCH = not_found
-    do_DELETE = not_found
     do_HEAD = not_found
     do_OPTIONS = not_found
 
