@@ -19,7 +19,7 @@ One person on one machine, using the service from a script or a browser. There a
 - Story 1.1: as the operator I start the service and ask `GET /health`; it answers `200 {"status": "ok"}`.
 - Story 1.2: as the operator I ask `GET /build-id`; it answers `200 {"build_id": "<the git commit the service was built from, or 'dev'>"}`.
 - Story 1.3: the test suite starts the service on a free port, calls both endpoints, and passes; CI runs it green on `main`.
-- Story 1.4: as the runtime host I ask `GET /build-id.txt`; it answers `200` with `Content-Type: text/plain` and the bare build id (the same value as `/build-id`'s `build_id`) and nothing else. This is the one endpoint that is not JSON, because the factory's runtime host compares the body to the candidate as plain text (owner decision 2026-10-24, option c of the loop's first report).
+- Story 1.4: as the runtime host I ask `GET /build-id.txt`; it answers `200` with `Content-Type: text/plain` and the bare build id (the same value as `/build-id`'s `build_id`) and nothing else. This is the one endpoint that is not JSON, because the factory's runtime host compares the body to the candidate as plain text (decided 2026-10-24 by the trial's operator, the harnesA4 seat, as option c of the loop's first report; the owner was not asked and had not seen the report).
 
 ## Phase 2: notes
 
