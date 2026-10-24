@@ -1,0 +1,9 @@
+{
+  "workflow": "archon-loop",
+  "parallel": 1,
+  "inputs": {
+    "runtime": "harness/runtime.inputs.json",
+    "holdout": "/home/marek/.factory-private/factory-trial-2026-10-24/holdout.md",
+    "merge": "auto"
+  }
+}
