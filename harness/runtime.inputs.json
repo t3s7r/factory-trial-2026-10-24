@@ -1,4 +1,5 @@
 {
+  "repository": "t3s7r/factory-trial-2026-10-24 on github.com. The owner is t3s7r, nothing else. An issue's URL is https://github.com/t3s7r/factory-trial-2026-10-24/issues/<number>; a pull request's is https://github.com/t3s7r/factory-trial-2026-10-24/pull/<number>. Write them out in full.",
   "description": "Project scenario/environment data for shared runtime verification. Producer input flags require final integration mapping; this file executes nothing.",
   "scenarios": "harness/END-TO-END.md",
   "holdout": ".factory/holdout/HOLDOUT.md",
